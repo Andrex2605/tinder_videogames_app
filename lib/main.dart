@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
           '/':(context)=> const LoginScreen(),
           '/register':(context)=> const RegisterScreen(),
           '/home':(context)=> const HomeScreen(),
-          '/initial':(context) => const InicialScreen()
+          '/initial':(context) => const InitialScreen()
         },
     );
   }
