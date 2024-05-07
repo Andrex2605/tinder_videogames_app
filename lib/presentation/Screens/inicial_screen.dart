@@ -38,6 +38,7 @@ class InitialViewState extends ConsumerState<InitialView> {
             
             GameVerticalListView(
               games: gameGames,
+              loadNextPage: () => ref.read(gameProvider.notifier).loadNextGame(),
             ),
           ],
         );

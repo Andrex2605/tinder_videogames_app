@@ -5,8 +5,9 @@ import 'package:tinder_videogames_app/infrastructure/game.dart';
 class GameVerticalListView extends StatefulWidget {
 
   final List<Game> games;
+  final VoidCallback? loadNextPage;
   
-  const GameVerticalListView({super.key, required this.games});
+  const GameVerticalListView({super.key, required this.games, this.loadNextPage});
 
   @override
   State<GameVerticalListView> createState() => _GameVerticalListViewState();
