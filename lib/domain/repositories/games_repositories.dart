@@ -6,5 +6,5 @@ abstract class GameRepository {
   
   Future<List<Game>> getGame(List<int>id);
 
-
+  
 }

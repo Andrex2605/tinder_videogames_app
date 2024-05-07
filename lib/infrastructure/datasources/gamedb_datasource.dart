@@ -18,4 +18,4 @@ class GameDbDatasource extends GameDatasource {
   
   return responses.map((response) => Game.fromJson(response.data)).toList();
 }
-  }
+}
