@@ -20,9 +20,7 @@ class HomeScreen extends StatelessWidget {
         automaticallyImplyLeading: false,
       ),
       body: const Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          
           _BuildCards(),
           
         ],
@@ -51,26 +49,23 @@ class _BuildCardsState extends ConsumerState<_BuildCards> {
 
     return SizedBox.expand(
       child: Stack(
-        children: [ListView.builder(
-          itemCount: recommendationGames.length,
-          itemBuilder: (context, index) {
-            if (index == recommendationGames.length - 1) {
-              // Si es el último elemento visible, carga más juegos
-              ref.read(recommendationProvider.notifier).loadNextGame();
-            }
-            return SizedBox(
-              height: 800,
-              width: 400,
-              child: Column(
+        children: [Expanded(
+          child: ListView.builder(
+            itemCount: recommendationGames.length,
+            itemBuilder: (context, index) {
+              if (index == recommendationGames.length - 1) {
+                // Si es el último elemento visible, carga más juegos
+                ref.read(recommendationProvider.notifier).loadNextGame();
+              }
+              return Column(
                 children: [
                   TinderCard(game: recommendationGames[index]),
-                  
+                  ButtonsBuild(games: recommendationGames[index])
                 ],
-              ),
-            );
-          },
+              );
+            },
+          ),
         ),
-       
       ]),
       
     );
@@ -168,7 +163,7 @@ class ButtonsBuild extends ConsumerWidget {
     try {
       // Aquí puedes obtener el userId (supongamos que ya lo tienes disponible)
       // URL del endpoint en tu backend para agregar a favoritos
-      String url = 'http://10.12.26.68:3000/recommendation/review';
+      String url = 'http://10.12.23.34:3000//recommendation/review';
 
       // Datos a enviar en la solicitud POST
       // Realizar la solicitud POST al backend
@@ -196,7 +191,7 @@ class ButtonsBuild extends ConsumerWidget {
     try {
       // Aquí puedes obtener el userId (supongamos que ya lo tienes disponible)
       // URL del endpoint en tu backend para agregar a favoritos
-      String url = 'http://10.12.26.68:3000/recommendation/review';
+      String url = 'http://10.12.23.34:3000/recommendation/review';
 
       // Datos a enviar en la solicitud POST
       // Realizar la solicitud POST al backend

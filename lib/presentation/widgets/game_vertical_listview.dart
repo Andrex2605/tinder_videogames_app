@@ -63,7 +63,7 @@ class _GameVerticalListViewState extends State<GameVerticalListView> {
     
 
       // Realizar la solicitud POST al backend
-      Response response = await _dio.post(url, data:{
+      final response = await _dio.post(url, data:{
         'userId': userId,
         'gameId': gameId,
         'review': true, // El review siempre es true, como se especificó

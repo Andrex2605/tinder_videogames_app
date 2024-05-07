@@ -23,7 +23,7 @@ class _LoginScreenState extends State<LoginScreen> {
     try {
       // Realiza la solicitud POST al backend
       final response = await _dio.post(
-        'http://10.12.26.68:3000/users/login',
+        'http://10.12.23.34:3000/users/login',
         data: {
           'email': email,
           'password': password,

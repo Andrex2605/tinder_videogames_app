@@ -6,7 +6,7 @@ import 'package:tinder_videogames_app/infrastructure/game.dart';
 
 class GameDbDatasource extends GameDatasource {
   final dio = Dio(BaseOptions(
-    baseUrl: 'http://10.12.26.68:3000',
+    baseUrl: 'http://10.12.23.34:3000',
   
   ));
 
@@ -33,6 +33,7 @@ Future<List<Game>> getRecommendations(int userId, int numberOfGames) async {
     final Game game = Game.fromJson(response.data);
     games.add(game);
   }
+  
 
   return games;
 }
