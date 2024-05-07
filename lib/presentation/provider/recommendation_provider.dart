@@ -2,17 +2,18 @@
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tinder_videogames_app/infrastructure/game.dart';
+import 'package:tinder_videogames_app/main.dart';
 import 'package:tinder_videogames_app/presentation/provider/game_repository_provider.dart';
 
 
-final gameProvider = StateNotifierProvider<GameNotifier, List<Game>>((ref){
+final recommendationProvider = StateNotifierProvider<GameNotifier, List<Game>>((ref){
   
-  final fetchGame = ref.watch(gameRepositoryProvider).getGame;
-  final id=[141,509,435,175,1592,1155,833,3316,353,1791,402,608];
-  return GameNotifier(fetchGame: fetchGame,id: id);
+  final fetchGame = ref.watch(gameRepositoryProvider).getRecommendations;
+  final id = userId;
+  return GameNotifier(fetchGame: fetchGame,id: id! ,numberOfGames: 10);
 });
 
-typedef GameCallback = Future<List<Game>> Function(List<int>);
+typedef GameCallback = Future<List<Game>> Function(int id,int numberOfGames);
 
 
 class GameNotifier extends StateNotifier<List<Game>>{
@@ -20,17 +21,17 @@ class GameNotifier extends StateNotifier<List<Game>>{
 
   bool isLoading = false;
   GameCallback fetchGame;
-  List<int> id;
-  
+  int id;
+  int numberOfGames;
   GameNotifier({
-    required this.fetchGame,required this.id
+    required this.fetchGame,required this.id,required this.numberOfGames
   }):super([]);
 
   Future<void> loadNextGame() async{
     if (isLoading) return;
 
     isLoading = true;
-    final List<Game> game = await fetchGame(id);
+    final List<Game> game = await fetchGame(id,numberOfGames);
     state = [ ...state, ...game];
     await Future.delayed(const Duration(milliseconds: 300));
     isLoading = false;

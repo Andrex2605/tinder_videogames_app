@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
+import 'package:tinder_videogames_app/main.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -15,7 +16,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _confirmPasswordController =
       TextEditingController();
 
-  final dio = Dio(BaseOptions(baseUrl: 'http://192.168.1.101:3000'));
+  final dio = Dio(BaseOptions(baseUrl: 'http://10.12.26.68:3000'));
 
   Future<void> _signUp() async {
     String name = _nameController.text;
@@ -40,12 +41,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
           'password': password,
         },
       );
-
+      // Suponiendo que el campo se llama 'userId'
+      final responseData = response.data;
+        userId = responseData['userId']; 
       // Verificar la respuesta del backend
       if (response.statusCode == 201) {
         // Éxito: el usuario se registró correctamente
         // Puedes manejar la respuesta del backend aquí
         print('Registro exitoso');
+        
         Navigator.pushNamed(context,'/initial');
       } else {
         // Error: no se pudo completar el registro

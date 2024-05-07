@@ -6,7 +6,7 @@ import 'package:tinder_videogames_app/presentation/Screens/inicial_screen.dart';
 import 'package:tinder_videogames_app/presentation/Screens/login_screen.dart';
 import 'package:tinder_videogames_app/presentation/Screens/register_screen.dart';
 
-
+int? userId;
 void main() => runApp(const ProviderScope(child: MyApp()));
 
 class MyApp extends StatelessWidget {

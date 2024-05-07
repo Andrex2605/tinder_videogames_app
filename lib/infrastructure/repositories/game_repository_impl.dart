@@ -11,5 +11,9 @@ class GameRepositoryImpl extends GameRepository {
   Future<List<Game>> getGame(List<int> id) {
     return datasource.getGame(id);
   }
+  @override
+  Future<List<Game>> getRecommendations(int userId,int numberOfGames) {
+    return datasource.getRecommendations(userId,numberOfGames);
+  }
   
 }

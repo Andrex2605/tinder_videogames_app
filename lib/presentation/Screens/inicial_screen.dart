@@ -48,7 +48,7 @@ class InitialViewState extends ConsumerState<InitialView> {
           height: 50,
           child: OutlinedButton(
             onPressed: (){
-              
+              Navigator.pushNamed(context, '/home');
             },
             style: ButtonStyle( backgroundColor: MaterialStateProperty.all<Color>(const Color(0xff142047))), 
             child: const Text(

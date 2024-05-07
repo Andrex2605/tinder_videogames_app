@@ -1,168 +1,140 @@
-// import 'dart:math' as math;
+
 // import 'package:flutter/material.dart';
 // import 'package:flutter_riverpod/flutter_riverpod.dart';
-// import 'package:tinder_videogames_app/presentation/provider/card_provider.dart';
+// import 'package:tinder_videogames_app/infrastructure/game.dart';
+// import 'package:tinder_videogames_app/presentation/provider/recommendation_provider.dart';
 
 // // Assuming CardProvider holds state and methods for card interactions
-
-// final cardProvider = Provider((ref) => CardProvider());
-
-// class TinderCard extends ConsumerWidget {
-//   final String urlImage;
-//   final bool isFront;
-
-//   const TinderCard({
-//     super.key,
-//     required this.urlImage,
-//     required this.isFront,
-//   });
+// class TinderCard extends ConsumerStatefulWidget {
+//   const TinderCard({super.key});
 
 //   @override
-//   Widget build(BuildContext context, WidgetRef ref) {
-//     return SizedBox.expand(
-//       child: widget.isFront
-//           ? BuildFrontCard(ref: ref, widget: widget)
-//           : BuildCard(widget: widget),
-//     );
+//   // ignore: library_private_types_in_public_api
+//   _TinderCardState createState() => _TinderCardState();
+// }
+
+
+// class _TinderCardState extends ConsumerState<TinderCard> {
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     ref.read(recommendationProvider.notifier).loadNextGame();
+//   }
+//   @override
+//   Widget build(BuildContext context) {
+//     final recommendationGames = ref.watch(recommendationProvider);
+//     return BuildCard(games:recommendationGames);
 //   }
 // }
 
-// class BuildFrontCard extends ConsumerWidget {
-//   final TinderCard widget;
-//   final WidgetRef ref;
-
-//   const BuildFrontCard({
-//     super.key,
-//     required this.widget,
-//     required this.ref,
-//   });
-
-//   @override
-//   Widget build(BuildContext context, WidgetRef ref) {
-//     final position = ref.watch(cardProvider.select((value) => value.position));
-//     final milliseconds = ref.watch(cardProvider.select((value) => value.isDragging ? 0 : 400));
-//     final center = ref.watch(cardProvider.select((value) => ref.read(cardProvider).screenSize?.center(Offset.zero)));
-
-//     if (center == null) return Container(); // Handle potential null case
-
-//     final angle = ref.watch(cardProvider.select((value) => value.angle * math.pi / 180));
-//     final rotatedMatrix = Matrix4.identity()
-//       ..translate(center.dx, center.dy)
-//       ..rotateZ(angle)
-//       ..translate(-center.dx, -center.dy);
-
-//     return AnimatedContainer(
-//       duration: Duration(milliseconds: milliseconds),
-//       curve: Curves.easeInOut,
-//       transform: rotatedMatrix.translate(position.dx, position.dy),
-//       child: Stack(
-//         children: [
-//           BuildCard(widget: widget),
-//           const BuildStamps(),
-//         ],
-//       ),
-//     );
-//   }
-// }
-
-// class BuildStamps extends ConsumerWidget {
-//   const BuildStamps({super.key});
-
-//   @override
-//   Widget build(BuildContext context, WidgetRef ref) {
-//     final status = ref.watch(cardProvider.select((value) => value.getStatus()));
-//     final opacity = ref.watch(cardProvider.select((value) => value.getStatusOacity()));
-
-//     switch (status) {
-//       case CardStatus.like:
-//         final child = buildStamp(angle: -0.5, color: Colors.green, text: 'Like', opacity: opacity);
-//         return Positioned(top: 64, left: 50, child: child);
-//       case CardStatus.dislike:
-//         final child = buildStamp(angle: 0.5, color: Colors.red, text: 'Dislike', opacity: opacity);
-//         return Positioned(top: 64, right: 50, child: child);
-//       case CardStatus.ignore:
-//         final child = Center(
-//           child: buildStamp(angle: 0, color: Colors.blue, text: 'Ignore', opacity: opacity),
-//         );
-//         return Positioned(bottom: 128, right: 0, left: 0, child: child);
-//       default:
-//         return Container();
-//     }
-//   }
-// }
-
-// Widget buildStamp({
-//   required double angle,
-//   required MaterialColor color,
-//   required String text,
-//   required double opacity,
-// }) {
-//   return Opacity(
-//     opacity: opacity,
-//     child: Transform.rotate(
-//       angle: angle,
-//       child: Container(
-//         padding: const EdgeInsets.symmetric(horizontal: 8),
-//         decoration: BoxDecoration(
-//           border: Border.all(color: color, width: 4),
-//           borderRadius: BorderRadius.circular(22),
-//         ),
-//         child: Text(
-//           text,
-//           textAlign: TextAlign.center,
-//           style: TextStyle(
-//             color: color,
-//             fontSize: 48,
-//             fontWeight: FontWeight.bold,
-//           ),
-//         ),
-//       ),
-//     ),
-//   );
-// }
 
 
-// class BuildCard extends StatelessWidget {
+// class BuildCard extends StatefulWidget {
+//   final List<Game> games;
+//   final VoidCallback?  loadNextPage;
 //   const BuildCard({
 //     super.key,
-//     required this.widget,
+//      required this.games, this.loadNextPage,
 //   });
 
-//   final TinderCard widget;
+
+
+//   @override
+//   State<BuildCard> createState() => _BuildCardState();
+// }
+
+// class _BuildCardState extends State<BuildCard> {
+//   late ScrollController _scrollController;
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     _scrollController = ScrollController();
+//     _scrollController.addListener(_scrollListener);
+//   }
+
+//   @override
+//   void dispose() {
+//     _scrollController.dispose();
+//     super.dispose();
+//   }
+
+//   void _scrollListener() {
+//     if (_scrollController.position.atEdge) {
+//       if (_scrollController.position.pixels == 0) {
+//         // Estás al principio de la lista
+//       } else {
+//         // Estás al final de la lista
+//         if (widget.loadNextPage != null) {
+//           widget.loadNextPage!(); // Llama a la función para cargar más juegos
+//         }
+//       }
+//     }
+//   }
 
 //   @override
 //   Widget build(BuildContext context) {
 //     return ClipRRect(
 //       borderRadius: BorderRadius.circular(20),
-//       child: Container(
-//         decoration: BoxDecoration(
-//           image:DecorationImage(
-//             image: NetworkImage(widget.urlImage),
-//             fit: BoxFit.cover,
-//             alignment: Alignment.center
-//           ),
-//         ),
-//         child: Container(
-//           decoration: const BoxDecoration(
-//             gradient: LinearGradient(
-//               colors: [Colors.transparent, Colors.black],
-//               begin: Alignment.topCenter,
-//               end: Alignment.bottomCenter,
-//               stops: [0.6,1]
-//             )
-//           ),
-//           padding: const EdgeInsets.all(20),
-//           child:  const Column(
-//             children: [
-//               Spacer(),
-//               // BuildName(widget: widget),
-//               SizedBox(height: 8),
-//             ],),
-//         ),
+//       child: ListView.builder(
+//         controller: _scrollController,
+//         itemCount: widget.games.length,
+//         itemBuilder: (context, index) {
+//           if (index == widget.games.length - 1) {
+//             // Si es el último elemento visible, carga más juegos
+//             if (widget.loadNextPage != null) {
+//               widget.loadNextPage!(); // Llama a la función para cargar más juegos
+//             }
+//           }
+//           return _Card(game: widget.games[index]);
+//         },
 //       ),
 //     );
 //   }
+// }
 
+
+
+// class _Card extends StatelessWidget {
+
+//   final Game game;
+
+//   const _Card({
+//      required this.game
+//   });
+
+  
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Container(
+//       decoration: BoxDecoration(
+//         image:DecorationImage(
+//           image: NetworkImage(game.backgroundImage),
+//           fit: BoxFit.cover,
+//           alignment: Alignment.center
+//         ),
+//       ),
+//       child: Container(
+//         decoration: const BoxDecoration(
+//           gradient: LinearGradient(
+//             colors: [Colors.transparent, Colors.black],
+//             begin: Alignment.topCenter,
+//             end: Alignment.bottomCenter,
+//             stops: [0.6,1]
+//           )
+//         ),
+//         padding: const EdgeInsets.all(20),
+//         child:  const Column(
+//           children: [
+//             Spacer(),
+//             // BuildName(widget: widget),
+//             SizedBox(height: 8),
+//           ],),
+//       ),
+//     );
+//   }
 // }
 
 

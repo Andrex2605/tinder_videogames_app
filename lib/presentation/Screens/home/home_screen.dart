@@ -1,72 +1,130 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tinder_videogames_app/infrastructure/game.dart';
+import 'package:tinder_videogames_app/main.dart';
 import 'package:tinder_videogames_app/presentation/provider/card_provider.dart';
-import 'package:tinder_videogames_app/presentation/widgets/tinder_card.dart';
+import 'package:tinder_videogames_app/presentation/provider/recommendation_provider.dart';
 
 class HomeScreen extends StatelessWidget {
   static const String name = 'home_screen';
 
   const HomeScreen({super.key});
-  
-  
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Videogames recomendations'),
-          centerTitle: true,
-          automaticallyImplyLeading: false,
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Videogames recomendations'),
+        centerTitle: true,
+        automaticallyImplyLeading: false,
+      ),
+      body: const Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
           
+          _BuildCards(),
+          
+        ],
+      )
+      
+    );
+  }
+}
+
+class _BuildCards extends ConsumerStatefulWidget {
+  const _BuildCards();
+
+  @override
+  _BuildCardsState createState() => _BuildCardsState();
+}
+
+class _BuildCardsState extends ConsumerState<_BuildCards> {
+  @override
+  void initState() {
+    super.initState();
+    ref.read(recommendationProvider.notifier).loadNextGame();
+  }
+  @override
+  Widget build(BuildContext context) {
+    final recommendationGames = ref.watch(recommendationProvider);
+
+    return SizedBox.expand(
+      child: Stack(
+        children: [ListView.builder(
+          itemCount: recommendationGames.length,
+          itemBuilder: (context, index) {
+            if (index == recommendationGames.length - 1) {
+              // Si es el último elemento visible, carga más juegos
+              ref.read(recommendationProvider.notifier).loadNextGame();
+            }
+            return SizedBox(
+              height: 800,
+              width: 400,
+              child: Column(
+                children: [
+                  TinderCard(game: recommendationGames[index]),
+                  
+                ],
+              ),
+            );
+          },
         ),
-        body: SafeArea(
-          child: Container(
-            padding: const EdgeInsets.all(16),
-            child: const Column(children: [
-              Expanded(child: BuildCards()),
-              Padding(padding: EdgeInsets.fromLTRB(0, 25, 0, 0)),
-              ButtonsBuild()
-             ]
-            )
-          )
-        ),       
+       
+      ]),
+      
+    );
+  }
+}
+
+class TinderCard extends StatelessWidget {
+  final Game game;
+
+  const TinderCard({super.key, required this.game});
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(20),
+      child: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: NetworkImage(game.backgroundImage),
+            fit: BoxFit.cover,
+            alignment: Alignment.center,
+          ),
+        ),
+        child: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.transparent, Colors.black],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              stops: [0.6, 1],
+            ),
+          ),
+          padding: const EdgeInsets.all(20),
+          child: const Column(
+            children: [
+              Spacer(),
+              SizedBox(height: 8),
+            ],
+          ),
+        ),
       ),
     );
   }
-   
 }
 
-// Assuming you have a CardProvider class with urlImages, resetUsers, getStatus, like, dislike, and ignore methods
+
+
 
 final cardProvider = Provider((ref) => CardProvider());
-
-class BuildCards extends ConsumerWidget {
-  const BuildCards({super.key});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final urlImages = ref.watch(cardProvider.select((value) => value.urlImages));
-
-    return urlImages.isEmpty
-        ? Center(
-            child: ElevatedButton(
-              child: const Text('Restart'),
-              onPressed: () => ref.read(cardProvider).resetUsers(),
-            ),
-          )
-        : SizedBox.expand(
-            // child: Stack(
-            //   children: urlImages
-            //       .map((urlImage) => TinderCard(urlImage: urlImage, isFront: urlImages.last == urlImage))
-            //       .toList(),
-            // ),
-          );
-  }
-}
-
 class ButtonsBuild extends ConsumerWidget {
-  const ButtonsBuild({super.key});
+
+  Game games;
+
+  ButtonsBuild({super.key,required this.games});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -74,7 +132,8 @@ class ButtonsBuild extends ConsumerWidget {
     final isLike = status == CardStatus.like;
     final isDisLike = status == CardStatus.dislike;
     final isIgnore = status == CardStatus.ignore;
-
+    
+    
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
@@ -84,17 +143,9 @@ class ButtonsBuild extends ConsumerWidget {
             backgroundColor: getColor(Colors.red, Colors.white, isDisLike),
             side: getBorder(Colors.red, Colors.white, isDisLike),
           ),
-          onPressed: () => ref.read(cardProvider).dislike(),
+          onPressed: () {ref.read(cardProvider).dislike();
+          _addToDislike(games.id);},
           child: const Icon(Icons.clear, color: Colors.white, size: 50),
-        ),
-        ElevatedButton(
-          style: ButtonStyle(
-            foregroundColor: getColor(Colors.blue, Colors.blue, isLike),
-            backgroundColor: getColor(Colors.blue, Colors.white, isLike),
-            side: getBorder(Colors.blue, Colors.white, isLike),
-          ),
-          onPressed: () => ref.read(cardProvider).ignore(),
-          child: const Icon(Icons.skip_next_outlined, color: Colors.white, size: 50),
         ),
         ElevatedButton(
           style: ButtonStyle(
@@ -102,11 +153,71 @@ class ButtonsBuild extends ConsumerWidget {
             backgroundColor: getColor(Colors.green, Colors.white, isIgnore),
             side: getBorder(Colors.green, Colors.white, isIgnore),
           ),
-          onPressed: () => ref.read(cardProvider).like(),
+          onPressed: () { ref.read(cardProvider).like();
+            _addToFavorites(games.id);
+          },
           child: const Icon(Icons.favorite, color: Colors.white, size: 50),
         ),
       ],
     );
+
+    
+  }
+  Future<void> _addToFavorites(int gameId) async {
+    final Dio dio = Dio();
+    try {
+      // Aquí puedes obtener el userId (supongamos que ya lo tienes disponible)
+      // URL del endpoint en tu backend para agregar a favoritos
+      String url = 'http://10.12.26.68:3000/recommendation/review';
+
+      // Datos a enviar en la solicitud POST
+      // Realizar la solicitud POST al backend
+      Response response = await dio.post(url, data:{
+        'userId': userId,
+        'gameId': gameId,
+        'review': true, // El review siempre es true, como se especificó
+      });
+
+      // Verificar el estado de la respuesta
+      if (response.statusCode == 201) {
+        // Éxito, puedes hacer algo si lo deseas
+        print('Juego agregado a favoritos exitosamente');
+      } else {
+        // Error en la solicitud, manejarlo según sea necesario
+        print('Error al agregar juego a favoritos');
+      }
+    } catch (e) {
+      // Error en la solicitud, manejarlo según sea necesario
+      print('Error: $e');
+    }
+  }
+  Future<void> _addToDislike(int gameId) async {
+    final Dio dio = Dio();
+    try {
+      // Aquí puedes obtener el userId (supongamos que ya lo tienes disponible)
+      // URL del endpoint en tu backend para agregar a favoritos
+      String url = 'http://10.12.26.68:3000/recommendation/review';
+
+      // Datos a enviar en la solicitud POST
+      // Realizar la solicitud POST al backend
+      Response response = await dio.post(url, data:{
+        'userId': userId,
+        'gameId': gameId,
+        'review': false, // El review siempre es true, como se especificó
+      });
+
+      // Verificar el estado de la respuesta
+      if (response.statusCode == 201) {
+        // Éxito, puedes hacer algo si lo deseas
+        print('Juego agregado a favoritos exitosamente');
+      } else {
+        // Error en la solicitud, manejarlo según sea necesario
+        print('Error al agregar juego a favoritos');
+      }
+    } catch (e) {
+      // Error en la solicitud, manejarlo según sea necesario
+      print('Error: $e');
+    }
   }
 }
 
@@ -133,6 +244,8 @@ class ButtonsBuild extends ConsumerWidget {
 
     return MaterialStateProperty.resolveWith(getBorder);
   }
+
+
 
 
 

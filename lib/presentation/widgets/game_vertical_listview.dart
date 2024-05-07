@@ -1,6 +1,8 @@
-import 'package:animate_do/animate_do.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:animate_do/animate_do.dart';
 import 'package:tinder_videogames_app/infrastructure/game.dart';
+import 'package:tinder_videogames_app/main.dart';
 
 class GameVerticalListView extends StatefulWidget {
   final List<Game> games;
@@ -17,11 +19,7 @@ class GameVerticalListView extends StatefulWidget {
 }
 
 class _GameVerticalListViewState extends State<GameVerticalListView> {
-
-  @override
-  void initState() {
-    super.initState();
-    }
+  final Dio _dio = Dio(); // Instancia de Dio
 
   @override
   Widget build(BuildContext context) {
@@ -37,11 +35,14 @@ class _GameVerticalListViewState extends State<GameVerticalListView> {
                 scrollDirection: Axis.vertical,
                 physics: const BouncingScrollPhysics(),
                 itemBuilder: (context, index) {
-
-
                   return FadeInUp(
-                    child: _Slide(game: widget.games[index], isSelected: false,)
-                    );
+                    child: _Slide(
+                      game: widget.games[index],
+                      onFavoritePressed: () {
+                        _addToFavorites(widget.games[index].id);
+                      },
+                    ),
+                  );
                 },
               ),
             ),
@@ -50,15 +51,46 @@ class _GameVerticalListViewState extends State<GameVerticalListView> {
       ),
     );
   }
+
+  Future<void> _addToFavorites(int gameId) async {
+    try {
+      // Aquí puedes obtener el userId (supongamos que ya lo tienes disponible)
+
+      // URL del endpoint en tu backend para agregar a favoritos
+      String url = 'http://10.12.26.68:3000/recommendation/review';
+
+      // Datos a enviar en la solicitud POST
+    
+
+      // Realizar la solicitud POST al backend
+      Response response = await _dio.post(url, data:{
+        'userId': userId,
+        'gameId': gameId,
+        'review': true, // El review siempre es true, como se especificó
+      });
+
+      // Verificar el estado de la respuesta
+      if (response.statusCode == 201) {
+        // Éxito, puedes hacer algo si lo deseas
+        print('Juego agregado a favoritos exitosamente');
+      } else {
+        // Error en la solicitud, manejarlo según sea necesario
+        print('Error al agregar juego a favoritos');
+      }
+    } catch (e) {
+      // Error en la solicitud, manejarlo según sea necesario
+      print('Error: $e');
+    }
+  }
 }
 
 class _Slide extends StatelessWidget {
   final Game game;
-  final bool isSelected;
+  final VoidCallback onFavoritePressed;
 
   const _Slide({
     required this.game,
-    required this.isSelected,
+    required this.onFavoritePressed,
   });
 
   @override
@@ -89,11 +121,8 @@ class _Slide extends StatelessWidget {
               ),
             ),
           ),
-
           const SizedBox(height: 8),
-
           SizedBox(width: 200, child: Text(game.name, maxLines: 2, style: textStyle.titleSmall)),
-
           SizedBox(
             width: 200,
             child: Row(
@@ -107,16 +136,13 @@ class _Slide extends StatelessWidget {
                   ),
                 ),
                 const Spacer(),
-                Checkbox(
-                  value: isSelected,
-                  onChanged: (value) {
-                    
-                  },
+                IconButton(
+                  icon: const Icon(Icons.favorite_border),
+                  onPressed: onFavoritePressed,
                 ),
               ],
             ),
           ),
-
           const SizedBox(height: 10),
         ],
       ),

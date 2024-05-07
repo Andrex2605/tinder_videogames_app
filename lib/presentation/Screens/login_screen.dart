@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:dio/dio.dart'; // Importa el paquete Dio
+import 'package:dio/dio.dart';
+import 'package:tinder_videogames_app/main.dart'; // Importa el paquete Dio
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -22,19 +23,21 @@ class _LoginScreenState extends State<LoginScreen> {
     try {
       // Realiza la solicitud POST al backend
       final response = await _dio.post(
-        'http://192.168.1.101:3000/users/login',
+        'http://10.12.26.68:3000/users/login',
         data: {
           'email': email,
           'password': password,
         },
       );
-
+      final responseData = response.data;
+        userId = responseData['userId']; 
       // Verifica la respuesta del backend
       if (response.statusCode == 201) {
         
         // Éxito: los datos de inicio de sesión son válidos
         // Puedes manejar la respuesta del backend aquí
         print('Inicio de sesión exitoso');
+        
         Navigator.pushNamed(context, '/home');
       } else {
         // Error: los datos de inicio de sesión no son válidos

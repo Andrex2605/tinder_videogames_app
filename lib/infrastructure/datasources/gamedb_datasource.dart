@@ -6,7 +6,7 @@ import 'package:tinder_videogames_app/infrastructure/game.dart';
 
 class GameDbDatasource extends GameDatasource {
   final dio = Dio(BaseOptions(
-    baseUrl: 'http://192.168.1.101:3000',
+    baseUrl: 'http://10.12.26.68:3000',
   
   ));
 
@@ -18,4 +18,26 @@ class GameDbDatasource extends GameDatasource {
   
   return responses.map((response) => Game.fromJson(response.data)).toList();
 }
+
+  @override
+
+Future<List<Game>> getRecommendations(int userId, int numberOfGames) async {
+  final responses = List.generate(
+    numberOfGames, 
+    (_) => dio.get('/recommendation/$userId/$numberOfGames')
+  );
+
+  final List<Game> games = [];
+  for (var responseFuture in responses) {
+    final Response response = await responseFuture;
+    final Game game = Game.fromJson(response.data);
+    games.add(game);
+  }
+
+  return games;
 }
+
+
+}
+
+
