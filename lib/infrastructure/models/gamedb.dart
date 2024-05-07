@@ -1,11 +1,4 @@
-
-import 'dart:convert';
-
-Game gameFromJson(String str) => Game.fromJson(json.decode(str));
-
-String gameToJson(Game data) => json.encode(data.toJson());
-
-class Game {
+class Gamedb {
     int id;
     String slug;
     String name;
@@ -23,7 +16,7 @@ class Game {
     List<String> tags;
     String esrbRating;
 
-    Game({
+    Gamedb({
         required this.id,
         required this.slug,
         required this.name,
@@ -42,7 +35,7 @@ class Game {
         required this.esrbRating,
     });
 
-    factory Game.fromJson(Map<String, dynamic> json) => Game(
+    factory Gamedb.fromJson(Map<String, dynamic> json) => Gamedb(
         id: json["id"],
         slug: json["slug"],
         name: json["name"],
@@ -79,4 +72,5 @@ class Game {
         "tags": List<dynamic>.from(tags.map((x) => x)),
         "esrb_rating": esrbRating,
     };
+    
 }

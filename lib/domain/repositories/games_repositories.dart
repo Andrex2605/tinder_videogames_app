@@ -1,9 +1,10 @@
 
-import '../../infrastructure/models/game.dart';
+
+import 'package:tinder_videogames_app/infrastructure/game.dart';
 
 abstract class GameRepository {
   
-  Future <Game>getGame(int gameId);
+  Future<List<Game>> getGame(List<int>id);
 
 
 }

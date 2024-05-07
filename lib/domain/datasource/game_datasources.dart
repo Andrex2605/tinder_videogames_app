@@ -1,9 +1,10 @@
 
-import '../../infrastructure/models/game.dart';
+import 'package:tinder_videogames_app/infrastructure/game.dart';
+
 
 abstract class GameDatasource {
   
-  Future <Game>getGame(int gameId);
+  Future<List<Game>> getGame(List<int> id);
 
 
 }
