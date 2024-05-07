@@ -5,6 +5,7 @@ import 'package:tinder_videogames_app/infrastructure/game.dart';
 import 'package:tinder_videogames_app/main.dart';
 import 'package:tinder_videogames_app/presentation/provider/card_provider.dart';
 import 'package:tinder_videogames_app/presentation/provider/recommendation_provider.dart';
+import 'package:tinder_videogames_app/presentation/widgets/tinder_card.dart';
 
 class HomeScreen extends StatelessWidget {
   static const String name = 'home_screen';
@@ -45,72 +46,13 @@ class _BuildCardsState extends ConsumerState<_BuildCards> {
   }
   @override
   Widget build(BuildContext context) {
-    final recommendationGames = ref.watch(recommendationProvider);
 
     return SizedBox.expand(
-      child: Stack(
-        children: [Expanded(
-          child: ListView.builder(
-            itemCount: recommendationGames.length,
-            itemBuilder: (context, index) {
-              if (index == recommendationGames.length - 1) {
-                // Si es el último elemento visible, carga más juegos
-                ref.read(recommendationProvider.notifier).loadNextGame();
-              }
-              return Column(
-                children: [
-                  TinderCard(game: recommendationGames[index]),
-                  ButtonsBuild(games: recommendationGames[index])
-                ],
-              );
-            },
-          ),
-        ),
-      ]),
+      child: TinderCard(),
       
     );
   }
 }
-
-class TinderCard extends StatelessWidget {
-  final Game game;
-
-  const TinderCard({super.key, required this.game});
-
-  @override
-  Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(20),
-      child: Container(
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: NetworkImage(game.backgroundImage),
-            fit: BoxFit.cover,
-            alignment: Alignment.center,
-          ),
-        ),
-        child: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Colors.transparent, Colors.black],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              stops: [0.6, 1],
-            ),
-          ),
-          padding: const EdgeInsets.all(20),
-          child: const Column(
-            children: [
-              Spacer(),
-              SizedBox(height: 8),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
 
 
 

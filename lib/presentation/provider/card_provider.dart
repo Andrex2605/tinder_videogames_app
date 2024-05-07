@@ -106,7 +106,7 @@ class CardProvider extends ChangeNotifier{
     return null;
   }
 
-
+ 
   void like(){
     _angle = 20;
     _position += Offset(2*_screenSize.width, 0);
