@@ -8,7 +8,8 @@ class InitialScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(body: InitialView());
+    return Scaffold(
+      body: const InitialView());
   }
 }
 
@@ -34,8 +35,32 @@ class InitialViewState extends ConsumerState<InitialView> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            
-            GameVerticalListView(games: gameGames)
+            const SizedBox(height: 50),
+            SizedBox(width: 150,height: 150,child: Image.asset('assets/images/Logo.jpg')),
+            const SizedBox(height: 30),
+            const Text('Porfavor, elige al menos 3 juegos, esto nos ayudara a darte una mejor experiencia'),
+            const SizedBox(height: 50,),
+            GameVerticalListView(games: gameGames),
+            const SizedBox(height: 50),
+             SizedBox(
+          width: double.infinity,
+          height: 50,
+          child: OutlinedButton(
+            onPressed: (){
+              
+            },
+            style: ButtonStyle( backgroundColor: MaterialStateProperty.all<Color>(const Color(0xff142047))), 
+            child: const Text(
+              'Listo',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 18
+              ),
+            ),
+          ),
+        ),
+            const SizedBox(height: 60)
           ],
         ),
       ),

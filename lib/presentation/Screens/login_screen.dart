@@ -1,229 +1,213 @@
-import "package:flutter/material.dart";
-
+import 'package:flutter/material.dart';
+import 'package:dio/dio.dart'; // Importa el paquete Dio
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+  const LoginScreen({Key? key}) : super(key: key);
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  final Dio _dio = Dio(); // Crea una instancia de Dio
+
+  void _login() async {
+    // Obtiene los valores de los campos de texto
+    String email = _emailController.text;
+    String password = _passwordController.text;
+
+    try {
+      // Realiza la solicitud POST al backend
+      Response response = await _dio.post(
+        'http://192.168.1.101:3000/users/login',
+        queryParameters: {
+          'email': email,
+          'password': password,
+        },
+      );
+
+      // Verifica la respuesta del backend
+      if (response.statusCode == 200) {
+        
+        // Éxito: los datos de inicio de sesión son válidos
+        // Puedes manejar la respuesta del backend aquí
+        print('Inicio de sesión exitoso');
+        Navigator.pushNamed(context, '/initial');
+      } else {
+        // Error: los datos de inicio de sesión no son válidos
+        // Puedes manejar el error aquí
+        print('Error al iniciar sesión');
+      }
+    } catch (e) {
+      // Error al realizar la solicitud HTTP
+      print('Error: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return Scaffold(
       body: Stack(
         children: [
-          Fondo(),
-          Contenido()],
-      )
-    );
-  }
-}
-
-class Contenido extends StatefulWidget {
-  const Contenido({super.key});
-
-  @override
-  State<Contenido> createState() => _ContenidoState();
-}
-
-class _ContenidoState extends State<Contenido> {
-  @override
-  Widget build(BuildContext context) {
-    return const Padding(
-      padding: EdgeInsets.symmetric(horizontal: 20),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Login',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 35,
-              letterSpacing: 1.5
+          const Fondo(),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Login',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 35,
+                    letterSpacing: 1.5,
+                  ),
+                ),
+                const SizedBox(height: 5),
+                Datos(
+                  emailController: _emailController,
+                  passwordController: _passwordController,
+                  onPressed: _login,
+                ),
+              ],
             ),
           ),
-          SizedBox(height: 5),
-          Datos(),
         ],
       ),
     );
   }
 }
 
-class Datos extends StatefulWidget {
-  const Datos({super.key});
+class Datos extends StatelessWidget {
+  final TextEditingController emailController;
+  final TextEditingController passwordController;
+  final VoidCallback onPressed;
 
-  @override
-  State<Datos> createState() => _DatosState();
-}
+  const Datos({
+    super.key,
+    required this.emailController,
+    required this.passwordController,
+    required this.onPressed,
+  });
 
-class _DatosState extends State<Datos> {
-  bool obs=true;
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
-        color: Colors.white
+        color: Colors.white,
       ),
-      child:  Column(
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
-            'Email', 
+            'Email',
             style: TextStyle(
-              color:Colors.black,
+              color: Colors.black,
               fontWeight: FontWeight.bold,
-              fontSize: 20
+              fontSize: 20,
             ),
           ),
           const SizedBox(height: 5),
           TextFormField(
+            controller: emailController,
             keyboardType: TextInputType.emailAddress,
             decoration: const InputDecoration(
               border: OutlineInputBorder(),
-              hintText: 'email@email.com'
-              ),
+              hintText: 'email@email.com',
             ),
+          ),
           const SizedBox(height: 5),
           const Text(
             'Password',
             style: TextStyle(
               color: Colors.black,
               fontWeight: FontWeight.bold,
-              fontSize: 20
+              fontSize: 20,
             ),
           ),
           const SizedBox(height: 5),
           TextFormField(
-            obscureText: obs,
+            controller: passwordController,
+            obscureText: true,
             decoration: InputDecoration(
               border: const OutlineInputBorder(),
               hintText: 'Password here',
               suffixIcon: IconButton(
-                onPressed: (){
-                  setState(() {
-                    obs==true ? obs = true : obs = false;
-                  });
-                }, 
-                icon: const Icon(Icons.remove_red_eye_outlined)
-              )
+                onPressed: () {},
+                icon: const Icon(Icons.remove_red_eye_outlined),
+              ),
             ),
           ),
-          const Remember(),
-          const SizedBox(height: 30,),
-          const Buttons()
+          const SizedBox(height: 30),
+          SizedBox(
+            width: double.infinity,
+            height: 50,
+            child: OutlinedButton(
+              onPressed: onPressed,
+              style: ButtonStyle(
+                backgroundColor:
+                    MaterialStateProperty.all<Color>(const Color(0xff142047)),
+              ),
+              child: const Text(
+                'Login',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 10),
+          const Center(child: Text('or')),
+          const SizedBox(height: 10),
+          SizedBox(
+            width: double.infinity,
+            height: 50,
+            child: OutlinedButton(
+              onPressed: (){
+                Navigator.pushNamed(context, '/register');
+              },
+              style: ButtonStyle(
+                backgroundColor:
+                    MaterialStateProperty.all<Color>(const Color.fromARGB(255, 255, 255, 255)),
+              ),
+              child: const Text(
+                'Sing Up',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );
   }
 }
 
-class Remember extends StatefulWidget {
-  const Remember({super.key});
-
-  @override
-  State<Remember> createState() => _RememberState();
-}
-
-class _RememberState extends State<Remember> {
-  bool valor = false;
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Checkbox(
-          value:valor,
-          onChanged: (valor){
-            setState(() {
-              valor == false ? valor = true : valor =false;
-            });
-          },
-        ),
-        const Text('Remember me'),
-        const Spacer(flex: 1),
-        Expanded(
-          child: TextButton(onPressed: (){}, 
-          child: const Text('Forgot password?')),
-        )
-      ],);
-  }
-}
-
-class Buttons extends StatelessWidget {
-  const Buttons({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        SizedBox(
-          width: double.infinity,
-          height: 50,
-          child: OutlinedButton(
-            onPressed: (){
-              Navigator.pushNamed(context, '/initial');
-            },
-            style: ButtonStyle( backgroundColor: MaterialStateProperty.all<Color>(const Color(0xff142047))), 
-            child: const Text(
-              'Login',
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 18
-              ),
-            ),
-          ),
-        ),
-        const SizedBox(height: 25,width: double.infinity,),
-        const Text(
-          'or',
-          style: TextStyle(
-            color:Colors.grey
-          ),
-        ),
-        const SizedBox(height: 25,width: double.infinity,),
-        SizedBox(
-          width: double.infinity,
-          height: 50,
-          child: OutlinedButton(
-            onPressed: (){
-              Navigator.popAndPushNamed(context,'/register');
-            }, 
-            child: const Text(
-              'Sing up',
-              style: TextStyle(
-                color: Color(0xff142047),
-                fontWeight: FontWeight.bold,
-                fontSize: 18
-              ),
-              )
-            ),
-        ),
-        
-      ],
-    );
-  }
-}
-
 class Fondo extends StatelessWidget {
-  const Fondo({super.key});
+  const Fondo({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors:[
+          colors: [
             Colors.purpleAccent,
-            Colors.purple.shade300
+            Colors.purple.shade300,
           ],
           begin: Alignment.centerRight,
-          end: Alignment.centerLeft
+          end: Alignment.centerLeft,
         ),
       ),
     );
