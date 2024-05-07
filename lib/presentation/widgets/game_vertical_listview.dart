@@ -40,7 +40,7 @@ class _GameVerticalListViewState extends State<GameVerticalListView> {
 
 
                   return FadeInUp(
-                    child: _Slide(game: widget.games[index], isSelected: true,)
+                    child: _Slide(game: widget.games[index], isSelected: false,)
                     );
                 },
               ),
