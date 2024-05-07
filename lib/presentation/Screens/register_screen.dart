@@ -15,9 +15,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _confirmPasswordController =
       TextEditingController();
 
-  final dio = Dio();
+  final dio = Dio(BaseOptions(baseUrl: 'http://192.168.1.101:3000'));
 
-  void _signUp() async {
+  Future<void> _signUp() async {
     String name = _nameController.text;
     String email = _emailController.text;
     String password = _passwordController.text;
@@ -30,11 +30,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
       return;
     }
 
-    try {
+    
       // Realizar la solicitud POST al backend
       final response = await dio.post(
-        'https://192.168.1.101:3000/users/register',
-        queryParameters: {
+        '/users/register',
+        data: {
           'email': email,
           'fullName': name,
           'password': password,
@@ -42,7 +42,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       );
 
       // Verificar la respuesta del backend
-      if (response.statusCode == 200) {
+      if (response.statusCode == 201) {
         // Éxito: el usuario se registró correctamente
         // Puedes manejar la respuesta del backend aquí
         print('Registro exitoso');
@@ -51,10 +51,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         // Error: no se pudo completar el registro
         // Puedes manejar el error aquí
         print('Error al registrar');
-      }
-    } catch (e) {
-      // Error al realizar la solicitud HTTP
-      print('Error: $e');
+     
     }
   }
 

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:dio/dio.dart'; // Importa el paquete Dio
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({Key? key}) : super(key: key);
+  const LoginScreen({super.key});
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -14,28 +14,28 @@ class _LoginScreenState extends State<LoginScreen> {
 
   final Dio _dio = Dio(); // Crea una instancia de Dio
 
-  void _login() async {
+  Future<void> _login() async {
     // Obtiene los valores de los campos de texto
     String email = _emailController.text;
     String password = _passwordController.text;
 
     try {
       // Realiza la solicitud POST al backend
-      Response response = await _dio.post(
+      final response = await _dio.post(
         'http://192.168.1.101:3000/users/login',
-        queryParameters: {
+        data: {
           'email': email,
           'password': password,
         },
       );
 
       // Verifica la respuesta del backend
-      if (response.statusCode == 200) {
+      if (response.statusCode == 201) {
         
         // Éxito: los datos de inicio de sesión son válidos
         // Puedes manejar la respuesta del backend aquí
         print('Inicio de sesión exitoso');
-        Navigator.pushNamed(context, '/initial');
+        Navigator.pushNamed(context, '/home');
       } else {
         // Error: los datos de inicio de sesión no son válidos
         // Puedes manejar el error aquí

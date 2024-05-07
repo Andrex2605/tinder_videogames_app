@@ -8,8 +8,8 @@ class InitialScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: const InitialView());
+    return const Scaffold(
+      body: InitialView());
   }
 }
 
@@ -40,7 +40,8 @@ class InitialViewState extends ConsumerState<InitialView> {
             const SizedBox(height: 30),
             const Text('Porfavor, elige al menos 3 juegos, esto nos ayudara a darte una mejor experiencia'),
             const SizedBox(height: 50,),
-            GameVerticalListView(games: gameGames),
+            GameVerticalListView(games: gameGames,
+            loadNextPage: () => ref.read(gameProvider.notifier).loadNextGame()),
             const SizedBox(height: 50),
              SizedBox(
           width: double.infinity,
