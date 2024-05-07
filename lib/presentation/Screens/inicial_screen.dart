@@ -29,20 +29,16 @@ class InitialViewState extends ConsumerState<InitialView> {
   @override
   Widget build(BuildContext context) {
     final gameGames = ref.watch(gameProvider);
-    return CustomScrollView(slivers: [
-      SliverList(delegate: SliverChildBuilderDelegate((context, index) {
-        return Column(
-    
+    return SingleChildScrollView(
+      child: Center(
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             
-            GameVerticalListView(
-              games: gameGames,
-              loadNextPage: () => ref.read(gameProvider.notifier).loadNextGame(),
-            ),
+            GameVerticalListView(games: gameGames)
           ],
-        );
-      }))
-    ]);
+        ),
+      ),
+    );
   }
 }

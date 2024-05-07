@@ -32,7 +32,6 @@ class GameNotifier extends StateNotifier<List<Game>>{
     final List<Game> game = await fetchGame(id);
     state = [ ...state, ...game];
     await Future.delayed(const Duration(milliseconds: 300));
-    print(game);
     isLoading = false;
   }
 }

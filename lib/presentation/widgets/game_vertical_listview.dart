@@ -23,19 +23,21 @@ class _GameVerticalListViewState extends State<GameVerticalListView> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 350,
-      child: Column(
-        children: [
-          Text('data'),
-          Expanded(
-            child: ListView.builder(
-              itemCount: widget.games.length,
-              scrollDirection: Axis.vertical,
-              physics: const BouncingScrollPhysics(),
-              itemBuilder: (context,index){
-                return FadeInUp(child: _Slide(games:widget.games[index]));
-              }))
-        ],
+      height: 800,
+      child: Center(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Expanded(
+              child: ListView.builder(
+                itemCount: widget.games.length,
+                scrollDirection: Axis.vertical,
+                physics: const BouncingScrollPhysics(),
+                itemBuilder: (context,index){
+                  return FadeInUp(child: _Slide(games:widget.games[index]));
+                }))
+          ],
+        ),
       ),
     );
   }
@@ -57,7 +59,7 @@ class _Slide extends StatelessWidget {
         crossAxisAlignment:CrossAxisAlignment.start,
         children: [
           SizedBox(
-            width: 150,
+            width: 200,
             child: ClipRRect(
               borderRadius: BorderRadius.circular(20),
               child: Image.network(games.backgroundImage,
@@ -76,21 +78,21 @@ class _Slide extends StatelessWidget {
             )
           ),
 
-          const SizedBox(height: 5),
+          const SizedBox(height: 8),
 
-          SizedBox(width: 150,
+          SizedBox(width: 200,
             child: Text(games.name,
               maxLines: 2,
               style: textStyle.titleSmall,
             )
           ),
           SizedBox(
-            width: 150,
+            width: 200,
             child: Row(
               children: [
 
                 const SizedBox(width: 3),
-                Text(games.genres.toString(),style: textStyle.bodyMedium?.copyWith(color: Colors.blueAccent),),
+                Expanded(child: Text(games.genres.toString(),maxLines: 2,style: textStyle.bodyMedium?.copyWith(color: Colors.blue.shade900),)),
                 const Spacer(),
               ],
             ),

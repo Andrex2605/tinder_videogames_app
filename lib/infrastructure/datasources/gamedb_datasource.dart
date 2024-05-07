@@ -13,8 +13,9 @@ class GameDbDatasource extends GameDatasource {
 
   @override
   Future<List<Game>> getGame(List<int> id) async {
-  final responses = await Future.wait(id.map((id) => Dio().get('/games/$id')));
+  final responses = await Future.wait(id.map((id) => dio.get('/games/$id')));
   // Assuming each response item contains game data:
+  
   return responses.map((response) => Game.fromJson(response.data)).toList();
 }
   }
